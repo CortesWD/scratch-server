@@ -1,4 +1,11 @@
+/*
+ * Dependencies
+ */
 import { RESTDataSource, RequestOptions } from "apollo-datasource-rest";
+
+/*
+ * Models
+ */
 import { DiscogMaster, SearchResults } from "../models/dataSource";
 import { AssetType } from "../models/music";
 

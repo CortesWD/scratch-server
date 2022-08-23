@@ -1,4 +1,11 @@
+/*
+ * DataSource
+ */
 import DiscogAPI from "../datasource/discog-api";
+
+/*
+ * Others
+ */
 import { Album, Artist, AssetType } from "../models/music";
 
 interface SearchParams {
@@ -63,11 +70,8 @@ const resolvers = {
         albums: []
       }
     }
-  }, 
-
-  Artist: {
-    Album: {}
-  }
+  },
+  
 }
 
 export default resolvers;

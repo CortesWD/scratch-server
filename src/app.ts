@@ -1,3 +1,6 @@
+/*
+ * Dependencies
+ */
 import 'dotenv/config'
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,6 +9,9 @@ import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
 import express from 'express';
 
+/*
+ * Others
+ */
 import resolvers from './graphql/resolvers.js';
 import DiscogAPI from './datasource/discog-api.js';
 
@@ -15,9 +21,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(cors(), express.json());
-
-
-
 
 const typeDefs = await readFile(path.join(__dirname, '/graphql', 'schema.graphql'), 'utf-8');
 
