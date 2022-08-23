@@ -1,0 +1,46 @@
+type Query {
+  resultAlbums(input: GetAlbumsResults!): [Album]
+  album(input: GetAlbum): Album
+}
+
+type User {
+  id: ID
+  email: String!
+  collection: [Album!]
+  profilePic: String
+}
+
+type Album {
+  id: ID!
+  title: String!
+  genre: [String!]
+  year: Int
+  image: String
+  artist: Artist!
+  owned: Boolean!
+  format: [String]
+  trackList: [TrackList]
+}
+
+type Artist {
+  id: ID!
+  name: String!
+  description: String
+  albums: [Album]!
+}
+
+
+type TrackList {
+  title: String!
+  duration: String!
+  position: String
+}
+
+input GetAlbumsResults {
+  query: String!
+}
+
+input GetAlbum {
+  id: ID!
+  type: String!
+}
