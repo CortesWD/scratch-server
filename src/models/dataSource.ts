@@ -10,6 +10,11 @@ export interface DiscogRes {
 
 export interface SearchResults {
   results: DiscogRes[];
+  pagination: {
+    pages: number
+    page: number
+    items: number
+  }
 }
 
 export interface DiscogMaster {

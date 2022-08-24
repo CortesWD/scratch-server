@@ -28,19 +28,30 @@ const resolvers = {
     albums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<Album[]> => {
       const response = await dataSources.discogApi.albums(query, page);
 
-      const results: Album[] = response.results
+      console.log(response.pagination);
+      
+      const results: Album[] | any[] = response.results
         .map((album: any) => {
-          const { id, title, cover_image, genre, artist } = album;
-          return {
+          const { id, title, cover_image, genre, artist, formats, country } = album;
+
+          const format: string[] = formats
+            .map((f: { name: string }) => f.name)
+            .filter((e: string) => e !== null || e !== undefined)
+
+          const isVinyl = !!format.find((e) => e.toLowerCase() === 'vinyl');
+          
+          return isVinyl ? {
             id,
             title,
             image: cover_image,
             genre,
             artist,
-          }
-        });
+            country
+          } : null
+        })
+        .filter((alb: any) => alb !== null);
 
-      return results;
+      return results as Album[];
     },
 
     album: async (_: any, { input: { id: reqId } }: SearchParams, { dataSources }: Context): Promise<Album> => {
@@ -54,7 +65,7 @@ const resolvers = {
         year,
         genre: genres,
         trackList: tracklist,
-        artist, 
+        artist,
         format: formats,
         image: images[0].uri
       }
@@ -73,7 +84,7 @@ const resolvers = {
       }
     }
   },
-  
+
 }
 
 export default resolvers;
