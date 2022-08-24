@@ -1,15 +1,15 @@
 import { AssetType } from "./music"
 
 export interface DiscogRes {
-  id: number
-  type: AssetType
-  title: string
-  cover_image: string
-  genre: string[]
+  id: number;
+  type: AssetType;
+  title: string;
+  cover_image: string;
+  genre: string[];
 }
 
 export interface SearchResults {
-  results: DiscogRes[]
+  results: DiscogRes[];
 }
 
 export interface DiscogMaster {

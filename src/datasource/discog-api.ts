@@ -22,12 +22,12 @@ class DiscogAPI extends RESTDataSource {
     request.headers.set('Authorization', `Discogs key=${process.env.KEY}, secret=${process.env.SECRET}`)
   }
 
-  resultAlbums(q: string, page: string = "1"): Promise<SearchResults> {
-    return this.get(`/database/search`, { q, page });
+  albums(q: string, page: string = "1"): Promise<SearchResults> {
+    return this.get(`/database/search`, { q, page, type: 'release' });
   }
 
-  album(id: number = 1, type: AssetType): Promise<DiscogMaster> {
-    return this.get(`/${type}s/${id}`)
+  album(id: number = 1): Promise<DiscogMaster> {
+    return this.get(`/releases/${id}`)
   }
 
 }

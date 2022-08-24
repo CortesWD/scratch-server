@@ -25,27 +25,27 @@ interface Context {
 
 const resolvers = {
   Query: {
-    resultAlbums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<Album[]> => {
-      const response = await dataSources.discogApi.resultAlbums(query, page);
+    albums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<Album[]> => {
+      const response = await dataSources.discogApi.albums(query, page);
 
       const results: Album[] = response.results
-        .filter((item: { type: AssetType }) => (item.type.toLowerCase() === 'release') || (item.type.toLowerCase() === 'master'))
         .map((album: any) => {
-          const { id, title, cover_image, genre } = album;
+          const { id, title, cover_image, genre, artist } = album;
           return {
             id,
             title,
             image: cover_image,
-            genre
+            genre,
+            artist,
           }
         });
 
       return results;
     },
 
-    album: async (_: any, { input: { id: reqId, type } }: SearchParams, { dataSources }: Context): Promise<Album> => {
+    album: async (_: any, { input: { id: reqId } }: SearchParams, { dataSources }: Context): Promise<Album> => {
 
-      const response = await dataSources.discogApi.album(reqId, type);
+      const response = await dataSources.discogApi.album(reqId);
 
       const { id, year, title, genres, tracklist, artists: [artist], formats, images } = response;
       return {
@@ -62,12 +62,14 @@ const resolvers = {
   },
 
   Album: {
-    Artist: async (_: any, { input: { id: reqId, type } }: SearchParams, { dataSources }: Context): Promise<Artist> => {
+    artist: async (root: Album, __: any, { dataSources }: Context): Promise<Artist> => {
+      const { id: albumId, } = root;
+      const response = await dataSources.discogApi.album(albumId);
+      const { artists: [artist] } = response;
 
       return {
-        id: 123,
-        name: "string",
-        albums: []
+        id: artist.id,
+        name: artist.name
       }
     }
   },
