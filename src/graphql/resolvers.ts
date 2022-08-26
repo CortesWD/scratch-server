@@ -28,8 +28,6 @@ const resolvers = {
     albums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<Album[]> => {
       const response = await dataSources.discogApi.albums(query, page);
 
-      console.log(response.pagination);
-      
       const results: Album[] | any[] = response.results
         .map((album: any) => {
           const { id, title, cover_image, genre, artist, formats, country } = album;
@@ -39,7 +37,7 @@ const resolvers = {
             .filter((e: string) => e !== null || e !== undefined)
 
           const isVinyl = !!format.find((e) => e.toLowerCase() === 'vinyl');
-          
+
           return isVinyl ? {
             id,
             title,
@@ -58,32 +56,60 @@ const resolvers = {
 
       const response = await dataSources.discogApi.album(reqId);
 
-      const { id, year, title, genres, tracklist, artists: [artist], formats, images } = response;
+      const { id, released, styles, title, genres, tracklist, artists: [artist], formats, images, country } = response;
+
       return {
         id,
         title,
-        year,
+        year: released,
         genre: genres,
+        styles,
         trackList: tracklist,
         artist,
         format: formats,
-        image: images[0].uri
+        image: images[0].uri,
+        country
       }
     }
   },
 
   Album: {
     artist: async (root: Album, __: any, { dataSources }: Context): Promise<Artist> => {
-      const { id: albumId, } = root;
-      const response = await dataSources.discogApi.album(albumId);
-      const { artists: [artist] } = response;
+      const { artist } = root;
+      const response = await dataSources.discogApi.artist(artist.id);
+
+      const { profile, images: [image] } = response;
 
       return {
         id: artist.id,
-        name: artist.name
+        name: artist.name,
+        description: profile,
+        image: image.uri,
       }
     }
   },
+
+  Artist: {
+    albums: async (root: Artist, __: any, { dataSources }: Context): Promise<Album[]> => {
+      const response = await dataSources.discogApi.artistAlbums(root.id);
+
+      const albums: Album[] | any[] = response.releases
+        .filter((album) => album.type === 'release')
+        .map((album) => {
+          const { id, title, thumb, year } = album;
+
+          return {
+            id,
+            title,
+            image: thumb,
+            year,
+          }
+        })
+        .sort((a, b) => a.year - b.year);
+
+      return albums as Album[];
+    },
+  }
 
 }
 

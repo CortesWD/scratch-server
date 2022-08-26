@@ -3,17 +3,20 @@ export interface Album {
   id: number;
   title: string;
   image: string;
-  artist?: Artist;
+  artist: Artist;
   year?: number;
   genre?: string[];
   owned?: boolean;
   format?: string[];
   trackList?: TrackList[];
+  country?: string;
+  styles?: string[];
 }
 
 export interface Artist {
   id: number;
   name: string;
+  image: string;
   albums?: Album[];
   description?: string;
 }

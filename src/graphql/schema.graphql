@@ -28,6 +28,7 @@ type Artist {
   name: String!
   description: String
   albums: [Album]
+  image: String
 }
 
 
@@ -43,5 +44,4 @@ input GetAlbumsResults {
 
 input GetAlbum {
   id: ID!
-  type: String!
 }
