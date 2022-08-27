@@ -30,7 +30,7 @@ const resolvers = {
 
       const results: Album[] | any[] = response.results
         .map((album: any) => {
-          const { id, title, cover_image, genre, artist, formats, country } = album;
+          const { id, title, cover_image, genre, formats, country } = album;
 
           const format: string[] = formats
             .map((f: { name: string }) => f.name)
@@ -43,7 +43,6 @@ const resolvers = {
             title,
             image: cover_image,
             genre,
-            artist,
             country
           } : null
         })
@@ -77,9 +76,7 @@ const resolvers = {
     artist: async (root: Album, __: any, { dataSources }: Context): Promise<Artist> => {
       const { artist } = root;
       const response = await dataSources.discogApi.artist(artist.id);
-
       const { profile, images: [image] } = response;
-
       return {
         id: artist.id,
         name: artist.name,
