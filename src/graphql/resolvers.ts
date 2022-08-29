@@ -55,12 +55,12 @@ const resolvers = {
 
       const response = await dataSources.discogApi.album(reqId);
 
-      const { id, released, styles, title, genres, tracklist, artists: [artist], formats, images, country } = response;
+      const { id, year, styles, title, genres, tracklist, artists: [artist], formats, images, country } = response;
 
       return {
         id,
         title,
-        year: released,
+        year: new Date(year),
         genre: genres,
         styles,
         trackList: tracklist,
@@ -99,10 +99,10 @@ const resolvers = {
             id,
             title,
             image: thumb,
-            year,
+            year: new Date(year),
           }
         })
-        .sort((a, b) => a.year - b.year);
+        .sort((a, b) => a.year.getFullYear() - b.year.getFullYear());
 
       return albums as Album[];
     },

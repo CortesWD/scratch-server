@@ -38,7 +38,8 @@ export interface DiscogMaster {
   data_quality: string;
   videos: any[];
   formats?: any[];
-  country?: string
+  country?: string;
+  year: number;
 }
 
 export interface DiscogArtist {

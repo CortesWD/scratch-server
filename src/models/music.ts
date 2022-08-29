@@ -4,7 +4,7 @@ export interface Album {
   title: string;
   image: string;
   artist: Artist;
-  year?: number;
+  year?: Date;
   genre?: string[];
   owned?: boolean;
   format?: string[];
