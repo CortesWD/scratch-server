@@ -17,7 +17,7 @@ class DiscogAPI extends RESTDataSource {
   }
 
   willSendRequest(request: RequestOptions) {
-    request.headers.set('Authorization', `Discogs key=${process.env.KEY}, secret=${process.env.SECRET}`)
+    request.headers.set('Authorization', `Discogs key=${process.env.DISCOG_KEY}, secret=${process.env.DISCOG_SECRET}`)
   }
 
   albums(q: string, page: string = "1"): Promise<SearchResults> {

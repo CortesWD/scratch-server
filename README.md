@@ -4,7 +4,7 @@ This is a personal project in order to explorer the graphQL and Apollo/Server sp
 
 ### TODO
 - [x] Create base arquetype
-- [ ] Install and instantiate MongoBD and Mongoose
+- [X] Install and instantiate MongoBD and Mongoose
 - [-] Define queries/mutations schemas
 - [ ] Create Login controller
 - [ ] Add security layer
