@@ -31,8 +31,10 @@ export interface TrackList {
 
 export type AssetType = 'release' | 'master' | 'artist';
 
-export interface iUserCollection extends mongoose.Document<iAlbum> {
-  labels?: string[]
+export interface iUserCollection extends mongoose.Document<any, any, iAlbum> {
+  labels?: string[],
+  albumId: number,
+  userId: mongoose.Types.ObjectId
 }
 
 const collectionsSchema = new Schema({

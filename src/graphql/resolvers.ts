@@ -6,8 +6,9 @@ import DiscogAPI from "../datasource/discog-api";
 /*
  * Others
  */
-import { iAlbum, Artist, AssetType, UserCollection } from "../models/music.js";
-import { iUser, User } from "../models/user.js";
+import { iAlbum, Artist, AssetType, UserCollection, iUserCollection } from "../models/music.js";
+import { iUser } from "../models/user.js";
+import { CustomError } from "../utils/generic.js";
 
 interface SearchParams {
   input: {
@@ -74,34 +75,28 @@ const resolvers = {
   },
 
   Mutation: {
-    addToCollection: async (_: any, { input }: any): Promise<iUser | Error> => {
-      const {
-        id,
-        title,
-        image,
-      } = input;
+    addToCollection: async (_: any, { input }: any, { user, isLoggedIn }: any): Promise<iUser | Error> => {
+
+      if (!isLoggedIn) throw new CustomError(401, 'Unauthorized');
+      if (!user) { return new Error('user not found') };
+
+      const { id, title, image } = input;
+
       try {
         const newItem = new UserCollection({
           title,
           image,
-          albumId: id
+          albumId: id,
+          userId: user._id.toString()
         });
-
-        const user = await User.findById('630fbb7cb4cc759e82872261');
-
-        if (!user) { return new Error('user not found') };
 
         const savedItem = await newItem.save();
 
-        user?.collections?.push(savedItem);
-
-        await user?.save();
-
-        console.warn(user);
+        user.addToCollection(savedItem);
 
         return {
           id: user._id,
-          collections: user?.collections?.map(el => ({ id: el?._id?.toString() }))
+          collections: user?.collections?.map((el: iUserCollection) => ({ id: el?._id?.toString() }))
         } as iUser
 
       } catch (error) {

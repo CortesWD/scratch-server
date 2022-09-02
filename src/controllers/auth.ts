@@ -41,6 +41,9 @@ const login: RequestHandler = async (req, res, next) => {
       userId: user._id.toString()
     }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
+    req.session.isLoggedIn = true;
+    req.session.user = user;
+
     res.status(200)
       .json({
         token,
@@ -86,9 +89,9 @@ const signUp: RequestHandler = async (req, res, next) => {
 const passwordValidation = () => {
   return [
     body('password', 'invalid password')
-    .isLength({min: 6})
-    .isString()
-    .trim()
+      .isLength({ min: 6 })
+      .isString()
+      .trim()
   ]
 }
 
