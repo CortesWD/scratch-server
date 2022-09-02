@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
+import { iAlbum, iUserCollection } from "./music";
 
-const { Schema, model } = mongoose;
+const { Schema, model, Document: MongoDoc } = mongoose;
 
-export interface iUser {
+export interface iUser extends mongoose.Document {
   email: string;
   password: string;
-  collections?: any[];
-  wishlists?: any[];
+  collections?: iUserCollection[];
+  wishlists?: iUserCollection[];
 }
 
-const userSchema = new Schema<iUser>({
+const userSchema = new Schema({
   email: {
     type: String,
     required: true
@@ -17,16 +18,14 @@ const userSchema = new Schema<iUser>({
   password: {
     type: String,
     required: true,
-  }, 
+  },
   collections: [{
-    album: {
-      type: Object
-    }
+    type: Schema.Types.ObjectId,
+    ref: 'UserCollection'
   }],
   wishlists: [{
-    list: {
-      type: Object
-    }
+    type: Schema.Types.ObjectId,
+    ref: 'UserCollection'
   }],
 });
 

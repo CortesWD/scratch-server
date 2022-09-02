@@ -3,10 +3,14 @@ type Query {
   album(input: GetAlbum): Album
 }
 
+type Mutation {
+  addToCollection(input: AddCollection): User
+}
+
 type User {
   id: ID
   email: String!
-  collection: [Album!]
+  collections: [Album!]
   profilePic: String
 }
 
@@ -44,4 +48,10 @@ input GetAlbumsResults {
 
 input GetAlbum {
   id: ID!
+}
+
+input AddCollection {
+  id: ID!
+  title: String!
+  image: String!
 }

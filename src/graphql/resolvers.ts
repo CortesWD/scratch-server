@@ -6,7 +6,8 @@ import DiscogAPI from "../datasource/discog-api";
 /*
  * Others
  */
-import { Album, Artist, AssetType } from "../models/music";
+import { iAlbum, Artist, AssetType, UserCollection } from "../models/music.js";
+import { iUser, User } from "../models/user.js";
 
 interface SearchParams {
   input: {
@@ -25,10 +26,10 @@ interface Context {
 
 const resolvers = {
   Query: {
-    albums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<Album[]> => {
+    albums: async (_: any, { input: { query, page } }: SearchParams, { dataSources }: Context): Promise<iAlbum[]> => {
       const response = await dataSources.discogApi.albums(query, page);
 
-      const results: Album[] | any[] = response.results
+      const results: iAlbum[] | any[] = response.results
         .map((album: any) => {
           const { id, title, cover_image, genre, formats, country } = album;
 
@@ -48,10 +49,10 @@ const resolvers = {
         })
         .filter((alb: any) => alb !== null);
 
-      return results as Album[];
+      return results as iAlbum[];
     },
 
-    album: async (_: any, { input: { id: reqId } }: SearchParams, { dataSources }: Context): Promise<Album> => {
+    album: async (_: any, { input: { id: reqId } }: SearchParams, { dataSources }: Context): Promise<iAlbum> => {
 
       const response = await dataSources.discogApi.album(reqId);
 
@@ -72,14 +73,52 @@ const resolvers = {
     }
   },
 
+  Mutation: {
+    addToCollection: async (_: any, { input }: any): Promise<iUser | Error> => {
+      const {
+        id,
+        title,
+        image,
+      } = input;
+      try {
+        const newItem = new UserCollection({
+          title,
+          image,
+          albumId: id
+        });
+
+        const user = await User.findById('630fbb7cb4cc759e82872261');
+
+        if (!user) { return new Error('user not found') };
+
+        const savedItem = await newItem.save();
+
+        user?.collections?.push(savedItem);
+
+        await user?.save();
+
+        console.warn(user);
+
+        return {
+          id: user._id,
+          collections: user?.collections?.map(el => ({ id: el?._id?.toString() }))
+        } as iUser
+
+      } catch (error) {
+        console.log(error);
+        return error as Error;
+      }
+    }
+  },
+
   Album: {
-    artist: async (root: Album, __: any, { dataSources }: Context): Promise<Artist> => {
+    artist: async (root: iAlbum, __: any, { dataSources }: Context): Promise<Artist> => {
       const { artist } = root;
-      const response = await dataSources.discogApi.artist(artist.id);
+      const response = await dataSources.discogApi.artist(artist?.id ?? 0);
       const { profile, images: [image] } = response;
       return {
-        id: artist.id,
-        name: artist.name,
+        id: artist?.id ?? 0,
+        name: artist?.name ?? 'NN',
         description: profile,
         image: image.uri,
       }
@@ -87,10 +126,10 @@ const resolvers = {
   },
 
   Artist: {
-    albums: async (root: Artist, __: any, { dataSources }: Context): Promise<Album[]> => {
+    albums: async (root: Artist, __: any, { dataSources }: Context): Promise<iAlbum[]> => {
       const response = await dataSources.discogApi.artistAlbums(root.id);
 
-      const albums: Album[] | any[] = response.releases
+      const albums: iAlbum[] | any[] = response.releases
         .filter((album) => album.type === 'release')
         .map((album) => {
           const { id, title, thumb, year } = album;
@@ -104,7 +143,7 @@ const resolvers = {
         })
         .sort((a, b) => a.year.getFullYear() - b.year.getFullYear());
 
-      return albums as Album[];
+      return albums as iAlbum[];
     },
   }
 
